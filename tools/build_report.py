@@ -46,13 +46,10 @@ def body(document, text, size=10, first_indent=True, space_after=2, line=1.1):
     paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     if first_indent:
         paragraph.paragraph_format.first_line_indent = Pt(size * 2)
-    # Bold text between ** markers, so emphasis survives without extra runs.
-    parts = text.split('**')
-    for index, part in enumerate(parts):
-        if not part:
-            continue
-        run = paragraph.add_run(part)
-        set_run_font(run, BODY_FONT, size, bold=(index % 2 == 1))
+    # Body text is deliberately not bold: the ** markers only survive in this
+    # source file for historic readability and are stripped before rendering.
+    run = paragraph.add_run(text.replace('**', ''))
+    set_run_font(run, BODY_FONT, size, bold=False)
     return paragraph
 
 
