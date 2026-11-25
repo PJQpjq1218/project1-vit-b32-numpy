@@ -1,0 +1,28 @@
+# 大文件与课程提供的数据：不进入仓库
+weights/*.npz
+assets/reference_outputs.npz
+
+# 分步代码快照（仅用于本地生成提交历史）
+.history/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# 运行产物
+output_tokens.npz
+my_tokens.npz
+*.log
+metrics_log.txt
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ��Ⱦ��ʱĿ¼
+.dsh-office-*/
