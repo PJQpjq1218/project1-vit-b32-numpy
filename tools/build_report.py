@@ -193,8 +193,8 @@ def build():
     meta = document.add_paragraph()
     meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
     meta.paragraph_format.space_after = Pt(10)
-    run = meta.add_run('姓名：__________    学号：__________    班级：__________    日期：2026 年 11 月 25 日')
-    set_run_font(run, BODY_FONT, 9.5, color=RGBColor(0x44, 0x44, 0x44))
+    run = meta.add_run('姓名：彭佳琦    学号：2025681109    班级：人工智能学院 IEEE01 班    日期：2026 年 11 月 26 日')
+    set_run_font(run, BODY_FONT, 9, color=RGBColor(0x44, 0x44, 0x44))
 
     # ---------------- 1 task and method ----------------
     heading(document, '一、任务与方法')
