@@ -97,22 +97,28 @@ class ImageEncoder:
         C,H,W in that order. Each 32x32 RGB patch contributes 3*32*32 values.
         Use reshape/transpose. Do not resize the already-prepared input.
         """
-        # TODO-01: separate patch-grid axes; reorder; flatten.
-        # Input [B,3,224,224], return [B,49,3072].
-        raise NotImplementedError('TODO-01: turn each image into 49 patch rows')
+        if images.ndim != 4 or images.shape[1:] != (3, 224, 224):
+            raise ValueError(f'patchify expects [B,3,224,224], got {images.shape}')
+        batch = images.shape[0]
+        # Step 1: split each 224 axis into 7 patch positions of 32 pixels:
+        # [B,3,7,32,7,32] = [B,C,gy,patch_h,gx,patch_w].
+        grid = images.reshape(batch, 3, 7, 32, 7, 32)
+        # Step 2: order the axes as image, patch-row, patch-column, C, h, w so
+        # that reading left to right then top to bottom matches the patch order.
+        grid = grid.transpose(0, 2, 4, 1, 3, 5)
+        # Step 3: flatten the grid to 49 patch rows and C*32*32=3072 values each.
+        return np.ascontiguousarray(grid).reshape(batch, 49, 3072)
 
     def embed(self, images):
         patches = self.patchify(images)  # [B,49,3072]
 
-        # TODO-05a: project patches to [B,49,768]. There is no patch bias.
-        raise NotImplementedError('TODO-05a: apply the supplied patch projection')
+        projected = patches @ self.patch_weight.T
 
         # Given: one supplied CLS row per image.
         cls = np.tile(self.cls, (images.shape[0], 1, 1))
 
-        # TODO-05b: prepend CLS on the token axis, then add learned positions.
-        # Return [B,50,768]. self.position broadcasts over B.
-        raise NotImplementedError('TODO-05b: CLS, patch rows and positions')
+        tokens = np.concatenate((cls, projected), axis=1)
+        return tokens + self.position
 
     def encode_tokens(self, images):
         """Provided assembly of token input and the 12 blocks; [B,50,768]."""
