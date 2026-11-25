@@ -1,0 +1,137 @@
+{
+  "stages": [
+    {
+      "name": "patches",
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "shape": [
+        2,
+        49,
+        3072
+      ],
+      "dtype": "float32",
+      "seconds": 0.004117100033909082
+    },
+    {
+      "name": "tokens",
+      "max_abs": 4.00543212890625e-05,
+      "mean_abs": 1.2890596193907793e-06,
+      "shape": [
+        2,
+        50,
+        768
+      ],
+      "dtype": "float32",
+      "seconds": 0.005151000106707215
+    },
+    {
+      "name": "block0",
+      "max_abs": 7.063150405883789e-06,
+      "mean_abs": 3.249983217301633e-07,
+      "shape": [
+        2,
+        50,
+        768
+      ],
+      "dtype": "float32",
+      "seconds": 0.05547669995576143
+    },
+    {
+      "name": "last_tokens",
+      "max_abs": 4.76837158203125e-05,
+      "mean_abs": 2.696382853173418e-06,
+      "shape": [
+        2,
+        50,
+        768
+      ],
+      "dtype": "float32",
+      "seconds": 0.6305097001604736
+    },
+    {
+      "name": "output",
+      "max_abs": 5.438923835754395e-07,
+      "mean_abs": 8.31275928092623e-08,
+      "shape": [
+        10,
+        512
+      ],
+      "dtype": "float32",
+      "seconds": 3.1949677001684904
+    },
+    {
+      "name": "batch",
+      "max_abs": 4.6193599700927734e-07,
+      "mean_abs": 7.632341691987676e-08,
+      "shape": [
+        3,
+        512
+      ],
+      "dtype": "float32",
+      "seconds": 0.9116187000181526
+    }
+  ],
+  "output_norm": {
+    "min": 0.9999999608683595,
+    "max": 1.0000000744003281
+  },
+  "pairwise_cosine": {
+    "min": 0.4623776851532766,
+    "max": 0.6738740667918175
+  },
+  "reorder_max_abs": 4.544854164123535e-07,
+  "duplicate_max_abs": 5.4016709327697754e-08,
+  "ablations": [
+    {
+      "variant": "k_all_axes",
+      "note": "k.T 交换全部 4 个轴",
+      "error": "ValueError: matmul: Input operand 1 has a mismatch in its core dimension 0, with gufunc signature (n?,k),(k,m?)->(n?,m?) (size 12 is different from 64)"
+    },
+    {
+      "variant": "interleaved_heads",
+      "note": "按 head_dim 步长交错切分 head",
+      "max_abs": 0.8708393573760986,
+      "mean_abs": 0.04789363517573103
+    },
+    {
+      "variant": "merge_no_transpose",
+      "note": "合并 head 时漏掉转置",
+      "max_abs": 1.907049298286438,
+      "mean_abs": 0.0900860861307179
+    },
+    {
+      "variant": "out_no_transpose",
+      "note": "输出投影漏掉转置",
+      "max_abs": 1.876547396183014,
+      "mean_abs": 0.09559291599243314
+    },
+    {
+      "variant": "causal_mask",
+      "note": "图像误用因果掩码",
+      "max_abs": 0.44298821687698364,
+      "mean_abs": 0.012132701710213117
+    },
+    {
+      "variant": "no_position",
+      "note": "漏加位置编码",
+      "max_abs": 1.775008201599121,
+      "mean_abs": 0.07110605376728434
+    }
+  ],
+  "image_ids": [
+    "image_01",
+    "image_02",
+    "image_03",
+    "image_04",
+    "image_05",
+    "image_06",
+    "image_07",
+    "image_08",
+    "image_09",
+    "image_10"
+  ],
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5"
+  }
+}
