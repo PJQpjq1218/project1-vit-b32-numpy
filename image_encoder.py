@@ -23,6 +23,8 @@ class MultiHeadAttention:
         In this image model D=768, H=12 and D/H=64. Use reshape/transpose.
         Research the head organization independently. Preserve token order.
         """
+        # TODO-02 contract: [B,N,D] to [B,H,N,D/H].
+        # Image model: D=768, H=12, D/H=64.
         batch, tokens, width = x.shape
         # Step 1: cut the feature axis D into H heads each of size D/H, so the
         # contiguous slices of every token's feature row become one head.
@@ -38,6 +40,8 @@ class MultiHeadAttention:
         k = self.split_heads(qkv[:, :, self.width:2*self.width])
         v = self.split_heads(qkv[:, :, 2*self.width:])
 
+        # TODO-03a: query/key comparisons, scaled by sqrt(head_dim).
+        # q,k,v: [B,H,N,64]. scores must have [B,H,N,N].
         # k is 4D here, so only its last two axes are exchanged: [B,H,64,N].
         scale = np.float32(np.sqrt(self.head_dim))
         scores = (q @ k.transpose(0, 1, 3, 2)) / scale
@@ -47,11 +51,15 @@ class MultiHeadAttention:
             scores = causal_mask(scores)
         coefficients = attention_weights(scores)  # supplied numerical helper
 
+        # TODO-03b: mix value rows using coefficients; then join head outputs.
+        # context: [B,H,N,64], merged: [B,N,D].
         # Step 1: every query row mixes all value rows of its own head only.
         context = coefficients @ v
         # Step 2: inverse of split_heads: heads back to the feature axis.
         merged = context.transpose(0, 2, 1, 3).reshape(x.shape)
 
+        # TODO-03c: output projection, using out_weight and out_bias.
+        # Return [B,N,D]. Remember the stored linear-weight orientation.
         return merged @ self.out_weight.T + self.out_bias
 
 
@@ -71,7 +79,7 @@ class TransformerBlock:
         update = self.attention(self.norm1(x), causal=causal)
 
         # TODO-04a: first residual addition. Name the result residual.
-        raise NotImplementedError('TODO-04a: add the attention update to x')
+        residual = x + update
 
         # Given: the second Norm and the exact checkpoint activation helper.
         u = self.norm2(residual)
@@ -79,7 +87,9 @@ class TransformerBlock:
         # TODO-04b: MLP = GELU(u @ W1.T + b1) @ W2.T + b2.
         # hidden: [B,N,3072], mlp_update: [B,N,768] for the image tower.
         # Return residual + mlp_update. Both residual paths retain [B,N,D].
-        raise NotImplementedError('TODO-04b: MLP and the second residual')
+        hidden = self.gelu(u @ self.fc1_weight.T + self.fc1_bias)
+        mlp_update = hidden @ self.fc2_weight.T + self.fc2_bias
+        return residual + mlp_update
 
 
 class ImageEncoder:
@@ -100,6 +110,8 @@ class ImageEncoder:
         C,H,W in that order. Each 32x32 RGB patch contributes 3*32*32 values.
         Use reshape/transpose. Do not resize the already-prepared input.
         """
+        # TODO-01: separate patch-grid axes; reorder; flatten.
+        # Input [B,3,224,224], return [B,49,3072].
         if images.ndim != 4 or images.shape[1:] != (3, 224, 224):
             raise ValueError(f'patchify expects [B,3,224,224], got {images.shape}')
         batch = images.shape[0]
@@ -115,11 +127,14 @@ class ImageEncoder:
     def embed(self, images):
         patches = self.patchify(images)  # [B,49,3072]
 
+        # TODO-05a: project patches to [B,49,768]. There is no patch bias.
         projected = patches @ self.patch_weight.T
 
         # Given: one supplied CLS row per image.
         cls = np.tile(self.cls, (images.shape[0], 1, 1))
 
+        # TODO-05b: prepend CLS on the token axis, then add learned positions.
+        # Return [B,50,768]. self.position broadcasts over B.
         tokens = np.concatenate((cls, projected), axis=1)
         return tokens + self.position
 
@@ -137,6 +152,7 @@ class ImageEncoder:
         # Select CLS, apply post_norm, and project with self.projection.
         # [B,50,768] -> [B,768] -> [B,512]. visual.proj is already [in,out].
         # Name the projected array output. The final unit-vector helper is given.
-        raise NotImplementedError('TODO-06: CLS selection, post-Norm and projection')
+        cls_row = tokens[:, 0, :]
+        output = self.post_norm(cls_row) @ self.projection
 
         return unit_vector(output)
