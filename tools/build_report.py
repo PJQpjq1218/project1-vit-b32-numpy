@@ -189,9 +189,15 @@ def build():
 
     meta = document.add_paragraph()
     meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    meta.paragraph_format.space_after = Pt(10)
+    meta.paragraph_format.space_after = Pt(2)
     run = meta.add_run('姓名：彭佳琦    学号：2025681109    班级：人工智能学院 IEEE01 班    日期：2026 年 11 月 26 日')
     set_run_font(run, BODY_FONT, 9, color=RGBColor(0x44, 0x44, 0x44))
+
+    repo = document.add_paragraph()
+    repo.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    repo.paragraph_format.space_after = Pt(6)
+    run = repo.add_run('代码仓库：https://github.com/PJQpjq1218/project1-vit-b32-numpy')
+    set_run_font(run, BODY_FONT, 9, color=RGBColor(0x1F, 0x4E, 0x79))
 
     # ---------------- 1 task and method ----------------
     heading(document, '一、任务与方法')

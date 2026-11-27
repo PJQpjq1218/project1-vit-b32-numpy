@@ -93,7 +93,9 @@
 
 本项目要求在不使用 PyTorch 等深度学习框架的前提下，仅用 NumPy 补全课程给定的 OpenCLIP ViT-B/32 视觉编码器，使其前向计算结果与课程提供的独立 Torch FP32 参考在数值上一致。输入是预处理后的图像批次 $[B,3,224,224]$（float32），输出是每张图一个 512 维单位向量 $[B,512]$，也即期末项目 szu\_python\_openclip 图像塔的最终输出。
 
-数据为课程附件中的 10 张真实图片（短边缩放 + 中心裁剪到 $224\times224$，按 OpenCLIP 的均值与标准差归一化）以及 152 个 visual.* 参数张量，共 87{,}849{,}216 个 float32 值。全程只做前向推理，不含任何训练或参数更新，因此本任务考察的是对数组轴、形状变换与矩阵乘法的掌握。判定标准为：形状一致、dtype 为 float32、全部有限，且 $|y-\hat{y}|\le \mathrm{atol}+\mathrm{rtol}\,|\hat{y}|$，其中预处理 atol 为 $2\times10^{-6}$、内部 token 为 $2\times10^{-4}$、最终输出为 $2\times10^{-5}$，rtol 统一取 $2\times10^{-4}$。交付物包括实现代码、说明功能与结构的 README（含依赖清单与权重获取方式）、8 条以上的分步提交记录，以及本实验报告；权重文件（326 MB）与参考输出按课程要求不入库，README 中给出两者的 SHA-256 校验值。代码仓库见 \url{https://github.com/PJQpjq1218/project1-vit-b32-numpy}。
+数据为课程附件中的 10 张真实图片（短边缩放 + 中心裁剪到 $224\times224$，按 OpenCLIP 的均值与标准差归一化）以及 152 个 visual.* 参数张量，共 87{,}849{,}216 个 float32 值。全程只做前向推理，不含任何训练或参数更新，因此本任务考察的是对数组轴、形状变换与矩阵乘法的掌握。判定标准为：形状一致、dtype 为 float32、全部有限，且 $|y-\hat{y}|\le \mathrm{atol}+\mathrm{rtol}\,|\hat{y}|$，其中预处理 atol 为 $2\times10^{-6}$、内部 token 为 $2\times10^{-4}$、最终输出为 $2\times10^{-5}$，rtol 统一取 $2\times10^{-4}$。交付物包括实现代码、说明功能与结构的 README（含依赖清单与权重获取方式）、8 条以上的分步提交记录，以及本实验报告；权重文件（326 MB）与参考输出按课程要求不入库，README 中给出两者的 SHA-256 校验值。
+
+\noindent 代码仓库：\url{https://github.com/PJQpjq1218/project1-vit-b32-numpy}（README 说明项目功能与结构、依赖清单、数据获取方法与复现步骤）
 
 
 % Experiment Process
