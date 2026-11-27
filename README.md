@@ -48,6 +48,7 @@ x --ln1--> --QKV 线性--> [B,50,2304] --切成 12 头--> q,k,v [B,12,50,64]
 | `assets/` | 10 张课程图片（`images.json` 含来源与 SHA-256）与 `reference_outputs.npz`（仅用于自检） |
 | `tools/report_metrics.py` | 本项目的证据脚本：分阶段误差、耗时、批量一致性、6 组错误实现对照实验、两张报告插图 |
 | `docs/` | 实验报告（docx/pdf）、`metrics.json`、插图 |
+| `docs/latex/` | 课程 LaTeX 模板版的实验报告源码（Overleaf 选 **XeLaTeX** 编译，`main.tex` + `figs/`） |
 
 六个实现任务（全部在 `image_encoder.py`）：
 
